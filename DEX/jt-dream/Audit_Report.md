@@ -37,6 +37,7 @@ High
 ### 해결방안
 토큰의 비율을 확인하는 require(reserveX * tokenYAmount == reserveY * tokenXAmount); 조건문 추가
 
+
 ## 사용자가 보유한 LPToken 양 확인
 ### 설명
 removeLiquidity()에서 사용자가 보유한 LPToken의 양을 확인하지 않음
