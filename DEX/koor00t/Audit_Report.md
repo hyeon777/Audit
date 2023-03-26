@@ -1,4 +1,4 @@
-## 유동성 공급 문제
+## 사용자의 보유 LPToken 양 확인
 ### 설명
 removeLiquidity()에서 사용자의 보유 LPToken 양을 확인하지 않음
 ```
