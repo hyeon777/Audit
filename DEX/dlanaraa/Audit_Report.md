@@ -31,62 +31,6 @@ Critical
 ### 해결방안
 사용자의 LPToken양을 확인하는 require 구문 추가
 
-## SWAP함수의 output값
-### 설명
-swap()에서 스왑하려는 금액이 커질수록 출력되어야하는 output 값과 실제 값의 오차가 커짐
-```
-  function swap(uint256 tokenXAmount, uint256 tokenYAmount, uint256 tokenMinimumOutputAmount) external returns (uint256 outputAmount){
-        //둘 중 하나는 무조건 0이어야 함
-        require(tokenXAmount == 0 || tokenYAmount == 0, "must have 0 amount token");
-        require(tokenXpool > 0 && tokenYpool > 0, "can't swap");
-
-        update();
-
-        /* tokenXAmount가 0
-        * 사용자 기준 : y를 주고 x를 받아오는 것
-        * dex 기준 : y를 받고 x를 돌려주는 것
-        * xy = (x-dx)(y+dy) -> dx = (x * dy) / (y + dy)
-        */
-        if(tokenXAmount == 0) {      
-            // 선행 수수료
-            outputAmount = (tokenXpool * (tokenYAmount * 999 / 1000)) / (tokenYpool + (tokenYAmount * 999 / 1000));
-            
-            // 최소값 검증
-            require(outputAmount >= tokenMinimumOutputAmount, "less than Minimum");
-
-            // output만큼 빼주고 받아온만큼 더해주기
-            tokenXpool -= outputAmount;
-            tokenYpool += tokenYAmount;
-
-            // 보내기
-            tokenY.transferFrom(msg.sender, address(this), tokenYAmount);
-            tokenX.transfer(msg.sender, outputAmount);
-        } 
-        /* tokenXAmount가 0이 아니면? -> tokenYAmount가 0일 것
-        * 사용자 기준 : x를 주고 y를 받아오는 것
-        * dex 기준 : x를 받고 y를 돌려주는 것
-        * xy = (x+dx)(y-dy) -> (y * dx) / (x + dx)
-        */
-        else {
-            outputAmount = (tokenYpool * (tokenXAmount * 999 / 1000)) / (tokenXpool + (tokenXAmount * 999 / 1000));
-
-            require(outputAmount >= tokenMinimumOutputAmount, "less than Minimum");
-
-            tokenYpool -= outputAmount;
-            tokenXpool += tokenXAmount;
-
-            tokenX.transferFrom(msg.sender, address(this), tokenXAmount);
-            tokenY.transfer(msg.sender, outputAmount);
-        }
-}
-```
-### 파급력
-High
-이유: 금액의 오차가 커질수록 풀 내부의 토큰 밸런스가 깨지게 됨
-
-### 해결방안
-아직 정확한 원인 분석이 되지 않음
-
 ## 유동성 공급 문제
 ### 설명
 totalsupply()가 0이 아닌 경우, tokenX에 따라 LPToken의 양이 정해짐.
