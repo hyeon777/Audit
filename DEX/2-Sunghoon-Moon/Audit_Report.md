@@ -56,25 +56,3 @@ High
 ### 해결방안
 아직 정확한 원인 분석이 되지 않음
 
-
-## transfer() 호출
-### 설명
-transfer()을 사용자가 호출할 수 있음
-```
-    function transfer(address to, uint256 tokenAmount) override public returns (bool){
-        require(to != address(0));
-        require(to != address(this));
-
-        
-        require(balanceOf(msg.sender) >= tokenAmount);
-        _transfer(msg.sender, to, tokenAmount);
-        
-        return true;
-    }
-```
-### 파급력
-Critical
-이유: 사용자가 원하는만큼 minting 가능
-
-### 해결방안
-require(msg.sender == address(this)); 조건문 추가
