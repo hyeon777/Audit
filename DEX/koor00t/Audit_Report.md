@@ -1,0 +1,31 @@
+## 유동성 공급 문제
+### 설명
+removeLiquidity()에서 사용자의 보유 LPToken 양을 확인하지 않음
+```
+function removeLiquidity(uint256 LPTokenAmount, uint256 minimumTokenXAmount, uint256 minimumTokenYAmount) public override returns (uint256, uint256){
+        require(LPTokenAmount > 0, "Token must be not zero.");
+        reserveX = tokenX.balanceOf(address(this));
+        reserveY = tokenY.balanceOf(address(this));
+        uint256 _totalSupply = totalSupply();
+        uint256 tokenXAmount = (_mul(LPTokenAmount, tokenX.balanceOf(address(this))) / _totalSupply);
+        uint256 tokenYAmount = (_mul(LPTokenAmount, tokenY.balanceOf(address(this))) / _totalSupply);
+        require(tokenXAmount >= minimumTokenXAmount && tokenYAmount >= minimumTokenYAmount, "Minimum liquidity.");
+
+        reserveX -= tokenXAmount;
+        reserveY -= tokenYAmount;
+
+        tokenX.transfer(msg.sender, tokenXAmount);
+        tokenY.transfer(msg.sender, tokenYAmount);
+
+        _burn(msg.sender, LPTokenAmount);
+        emit RemoveLiquidity(msg.sender, tokenXAmount, tokenYAmount);
+        return (tokenXAmount, tokenYAmount);
+        
+    }
+```
+### 파급력
+Critical
+이유: 사용자의 보유 LPToken 양을 확인하지 않으면 다른 사용자의 LPToken양까지 모두 사용해 DEX의 자금을 전부 탈취할 수 있음
+
+### 해결방안
+사용자의 LPToken양을 확인하는 require 구문 추가
