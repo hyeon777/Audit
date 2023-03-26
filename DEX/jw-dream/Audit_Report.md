@@ -47,7 +47,7 @@ function addLiquidity(uint256 tokenXAmount, uint256 tokenYAmount, uint256 minimu
 
 ### 파급력
 Medium
-이유: LPToken을 민팅하지 않고 그냥 지역변수에만 저장함
+이유: LPToken을 민팅하지 않고 매핑으로만 저장함
 
 ### 해결방안
 _mint()와 _burn()을 이용해 ERC20기반의 토큰을 LPToken으로 사용
