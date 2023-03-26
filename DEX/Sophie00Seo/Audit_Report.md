@@ -71,11 +71,11 @@ function addLiquidity(uint256 tokenXAmount, uint256 tokenYAmount, uint256 minimu
         return lpAmount;
     }
 ```
-###파급력
+### 파급력
 Medium
 이유: tokenX에 따라 LPToken 양을 결정하기 때문에 tokenX를 많이 공급해 이에 따라 LPToken을 많이 가져갈 수 있음
 
-###해결방안
+### 해결방안
 tokenY에 따른 LPToken의 양과 비교해 더 적은 수량에 따른 LPToken양을 지급
 
 
