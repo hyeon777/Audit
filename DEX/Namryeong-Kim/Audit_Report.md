@@ -45,4 +45,37 @@ High
 ### 해결방안
 아직 정확한 원인 분석이 되지 않음
 
+## 최소 토큰 수량 검사 
+### 설명
+removeLiquidity()에서 minimum_token_amount를 검사할때 등호를 포함하지 않음
+```
+ function removeLiquidity(uint256 _LPTokenAmount, uint256 _minimumTokenXAmount, uint256 _minimumTokenYAmount) external returns(uint256, uint256){
+        require(_LPTokenAmount > 0, "INSUFFICIENT_AMOUNT");
+        require(balanceOf(msg.sender) >= _LPTokenAmount, "INSUFFICIENT_LPtoken_AMOUNT");
+        
+        uint256 reserveX;
+        uint256 reserveY;
+        uint256 amountX;
+        uint256 amountY;
 
+        (reserveX, reserveY) = _update();
+
+        amountX =  reserveX * _LPTokenAmount/ totalSupply();
+        amountY = reserveY * _LPTokenAmount / totalSupply();
+        require(amountX >_minimumTokenXAmount && amountY>_minimumTokenYAmount, "INSUFFICIENT_LIQUIDITY_BURNED");
+        
+        tokenX_.transfer(msg.sender, amountX);
+        tokenY_.transfer(msg.sender, amountY);
+
+        _burn(msg.sender, _LPTokenAmount);
+
+        (reserveX_,reserveY_) = _update();
+        return (amountX, amountY);
+    }
+```
+### 파급력
+일반 버그
+이유: 컨트랙트에 직접적인 악영향은 미치지 않지만, 사용자가 원하는 조건이 성립되어도 함수가 실행되지 않을 수 있음
+
+### 해결방안
+비교 구문에 등호 추가
